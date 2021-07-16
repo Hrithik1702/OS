@@ -1,0 +1,144 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+int main()
+{
+    int n,tq;
+    printf("\nRound Robin Scheduling\n\n");
+    printf("Enter the no of processes:");
+    scanf("%d",&n);
+    printf("\nEnter the time quantum :");
+    scanf("%d",&tq);
+    int arrival[n] ;
+    int pro[n];
+    int bursttime[n];
+    for(int i =0;i<n;i++)
+    {
+        pro[i]=i+1;
+    }
+    int duplicate_bt[n];
+    for(int i =0;i<n;i++)
+    {
+        printf("\nEnter the Arrival time of process %d:",i+1);
+        scanf("%d",&arrival[i]);
+        printf("\nEnter the Burst time of process %d:",i+1);
+        scanf("%d",&bursttime[i]);
+        duplicate_bt[i]=bursttime[i];
+    }
+    for(int i=0;i<n;i++)
+    {
+        for(int j =0;j<n-i-1;j++)
+        {
+            if(arrival[j+1]<arrival[j])
+            {
+                int temp = arrival[j];
+                arrival[j]=arrival[j+1];
+                arrival[j+1]=temp;
+
+                temp = bursttime[j];
+                bursttime[j]=bursttime[j+1];
+                bursttime[j+1]=temp;
+
+                temp=pro[j];
+                pro[j]=pro[j+1];
+                pro[j+1]=temp;
+
+                temp=duplicate_bt[j];
+                duplicate_bt[j]=duplicate_bt[j+1];
+                duplicate_bt[j+1]=temp;
+
+            }
+
+        }
+    }
+    int flag[n];
+    for(int i=0;i<n;i++)
+    {
+        flag[i]=0;
+    }
+    int completiontime[n];
+    int queue[100];
+    int p=0;
+    int head=-1;
+    int tail =-1;
+    int ind=-1;
+    for(int t=0;p<n;)
+    {
+        if(head==-1 && tail==-1)
+        {
+            t=arrival[ind+1];
+            flag[ind+1]=1;
+            queue[++head]=ind+1;
+            queue[++tail]=ind+1;
+        }
+        else if(head>tail)
+        {
+            head=-1;
+            tail=-1;
+        }
+        else
+        {
+            ind = queue[head++];
+            if(bursttime[ind]>0)
+            {
+                if(bursttime[ind]>tq)
+                {
+                    t+=tq;
+                    bursttime[ind]-=tq;
+                    for(int j = ind+1;j<n;j++)
+                    {
+                        if(arrival[j]<=t && bursttime>0 && flag[j]==0)
+                        {
+                            queue[++tail]=j;
+                            flag[j]=1;
+                        }
+                    }
+                    queue[++tail]=ind;
+                }
+                else if(bursttime[ind]<=tq)
+                {
+                    t+=bursttime[ind];
+                    bursttime[ind]=0;
+                    completiontime[ind]=t;
+                    p++;
+                    for(int j = ind+1;j<n;j++)
+                    {
+                        if(arrival[j]<=t && bursttime>0 && flag[j]==0)
+                        {
+                            queue[++tail]=j;
+                            flag[j]=1;
+                        }
+                    }
+                }
+
+            }
+        }
+    }
+    int tt[n];
+    int sum=0;
+    for(int i =0;i<n;i++)
+    {
+        tt[i] = completiontime[i]-arrival[i];
+        sum+= tt[i];
+    }
+    int wt[n];
+    float att = sum/(double)n;
+    sum=0;
+    for(int i =0;i<n;i++)
+    {
+        wt[i]= tt[i]-duplicate_bt[i];
+        sum+= wt[i];
+
+    }
+    printf("\nprocess bursttime arrivaltime completiontime turnaroundtime waiting");
+    for(int i =0;i<n;i++)
+    {
+        printf("\nP%d       %d         %d           %d               %d           %d",pro[i],duplicate_bt[i],arrival[i],completiontime[i],tt[i],wt[i]);
+    }
+    float awt = sum/(double)n;
+    printf("\natt = %f",att);
+    printf("\nawt = %f",awt);
+
+
+}
+

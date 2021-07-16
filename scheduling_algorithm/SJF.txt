@@ -1,0 +1,137 @@
+#include <stdio.h>
+#include <stdlib.h>
+void sortbasedonbt(int a[],int b[],int c[],int start,int end)
+{
+    for(int i = start;i<=end;i++)
+    {
+        for(int j = start;j<=end-1;j++)
+        {
+            if(a[j+1]<a[j])
+            {
+                int temp = a[j];
+                a[j]=a[j+1];
+                a[j+1]=temp;
+
+                temp = b[j];
+                b[j]=b[j+1];
+                b[j+1]=temp;
+
+                temp=c[j];
+                c[j]=c[j+1];
+                c[j+1]=temp;
+            }
+
+        }
+    }
+}
+int main()
+{
+    int n;
+    printf("\nShortest Job First-non pre-emptive\n\n");
+    printf("Enter the no of processes:");
+    scanf("%d",&n);
+    int arrival[n] ;
+    int pro[n];
+    int bursttime[n];
+    for(int i =0;i<n;i++)
+    {
+        pro[i]=i+1;
+    }
+    for(int i =0;i<n;i++)
+    {
+        printf("\nEnter the Arrival time of process %d:",i+1);
+        scanf("%d",&arrival[i]);
+        printf("\nEnter the Burst time of process %d:",i+1);
+        scanf("%d",&bursttime[i]);
+    }
+    for(int i=0;i<n;i++)
+    {
+        for(int j =0;j<n-i-1;j++)
+        {
+            if(arrival[j+1]<arrival[j])
+            {
+                int temp = arrival[j];
+                arrival[j]=arrival[j+1];
+                arrival[j+1]=temp;
+
+                temp = bursttime[j];
+                bursttime[j]=bursttime[j+1];
+                bursttime[j+1]=temp;
+
+                temp=pro[j];
+                pro[j]=pro[j+1];
+                pro[j+1]=temp;
+            }
+            if(arrival[j+1]==arrival[j])
+            {
+                if(bursttime[j+1]<bursttime[i])
+                {
+                    int temp = arrival[j];
+                    arrival[j]=arrival[j+1];
+                    arrival[j+1]=temp;
+
+                    temp = bursttime[j];
+                    bursttime[j]=bursttime[j+1];
+                    bursttime[j+1]=temp;
+
+                    temp=pro[j];
+                    pro[j]=pro[j+1];
+                    pro[j+1]=temp;
+                }
+
+            }
+        }
+    }
+
+    int completiontime[n];
+    completiontime[0]=bursttime[0]+arrival[0];
+    for(int i =1;i<n;i++)
+    {
+        if(completiontime[i-1]>arrival[i])
+        {
+            int index=i;
+            for(int j =i+1;j<n;j++)
+            {
+                if(completiontime[i-1]<arrival[j])
+                {
+                    break;
+                }
+                index++;
+            }
+            sortbasedonbt(bursttime,arrival,pro,i,index);
+            completiontime[i]=completiontime[i-1]+bursttime[i];
+        }
+        else
+        {
+            completiontime[i]= completiontime[i-1]+bursttime[i]+(arrival[i]-completiontime[i-1]);
+        }
+
+    }
+
+    int tt[n];
+    int sum=0;
+    for(int i =0;i<n;i++)
+    {
+        tt[i] = completiontime[i]-arrival[i];
+        sum+= tt[i];
+    }
+    int wt[n];
+    float att = sum/(double)n;
+    sum=0;
+    for(int i =0;i<n;i++)
+    {
+        wt[i]= tt[i]-bursttime[i];
+        sum+= wt[i];
+
+    }
+    printf("\nprocess bursttime arrivaltime completiontime turnaroundtime waiting");
+    for(int i =0;i<n;i++)
+    {
+        printf("\nP%d       %d         %d           %d               %d           %d",pro[i],bursttime[i],arrival[i],completiontime[i],tt[i],wt[i]);
+    }
+    float awt = sum/(double)n;
+    printf("\natt = %f",att);
+    printf("\nawt = %f",awt);
+
+
+}

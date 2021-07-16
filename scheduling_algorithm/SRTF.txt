@@ -1,0 +1,81 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <limits.h>
+
+int main()
+{
+    int n;
+    printf("\nShortest Job First-pre-emptive\n\n");
+    printf("Enter the no of processes:");
+    scanf("%d",&n);
+    int arrival[n] ;
+    int pro[n];
+    int bursttime[n];
+    for(int i =0;i<n;i++)
+    {
+        pro[i]=i+1;
+    }
+    int duplicate_bt[n];
+    for(int i =0;i<n;i++)
+    {
+        printf("\nEnter the Arrival time of process %d:",i+1);
+        scanf("%d",&arrival[i]);
+        printf("\nEnter the Burst time of process %d:",i+1);
+        scanf("%d",&bursttime[i]);
+        duplicate_bt[i]=bursttime[i];
+    }
+
+    int completiontime[n];
+    int p=0;
+    int ind=0;
+    for(int t=0;p<n;t++)
+    {
+        int flag=0;
+        int min = INT_MAX;
+        for(int j =0;j<n;j++)
+        {
+            if(t>=arrival[j] && bursttime[j] >0 && bursttime[j]<min)
+            {
+                flag =1;
+                min = bursttime[j];
+                ind =j;
+            }
+        }
+        if(flag==1)
+        {
+            bursttime[ind]--;
+            if(bursttime[ind]==0)
+            {
+                completiontime[ind]=t+1;
+                p++;
+            }
+        }
+    }
+
+    int tt[n];
+    int sum=0;
+    for(int i =0;i<n;i++)
+    {
+        tt[i] = completiontime[i]-arrival[i];
+        sum+= tt[i];
+    }
+    int wt[n];
+    float att = sum/(double)n;
+    sum=0;
+    for(int i =0;i<n;i++)
+    {
+        wt[i]= tt[i]-duplicate_bt[i];
+        sum+= wt[i];
+
+    }
+    printf("\nprocess bursttime arrivaltime completiontime turnaroundtime waiting");
+    for(int i =0;i<n;i++)
+    {
+        printf("\nP%d       %d         %d           %d               %d           %d",pro[i],duplicate_bt[i],arrival[i],completiontime[i],tt[i],wt[i]);
+    }
+    float awt = sum/(double)n;
+    printf("\natt = %f",att);
+    printf("\nawt = %f",awt);
+
+
+}
